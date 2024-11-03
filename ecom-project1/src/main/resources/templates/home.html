@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Product Management</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-spacing: 10px;
+            border-collapse: collapse;
+            padding: 10px;
+        }
+
+        .my-4{
+            font-weight: 900;
+            font-size: 48px;
+
+        }
+
+        .flex{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+    </style>
+</head>
+
+<body>
+
+
+<div class="container">
+    <div class = "flex">
+        <span class="my-4">Product List</span>
+
+        <a href="/add" class="btn btn-primary">Add Product</a>
+
+    </div>
+
+    <!-- Product List Table -->
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th>Prod ID</th>
+            <th>Product Name</th>
+            <th>Product Description</th>
+            <th>Brand</th>
+            <th>Category</th>
+            <th>Release Date</th>
+            <th>Quantity</th>
+            <th>Actions</th>
+            <th>Update</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.productId}"></td>
+            <td th:text="${product.productName}"></td>
+            <td th:text="${product.description}"></td>
+            <td th:text="${product.brand}"></td>
+            <td th:text="${product.category}"></td>
+            <td th:text="${#dates.format(product.releaseDate, 'yyyy-MM-dd')}"></td>
+            <td th:text="${product.quantity}"></td>
+            <td>
+                <!-- Delete Button -->
+                <a th:href="@{/api/products/delete/{id}(id=${product.productId})}" class="btn btn-danger">Delete</a>
+            </td>
+            <td>
+                <!-- Update Button -->
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#updateModal"
+                        th:data-product-id="${product.productId}"
+                        th:data-product-name="${product.productName}"
+                        th:data-description="${product.description}"
+                        th:data-brand="${product.brand}"
+                        th:data-category="${product.category}"
+                        th:data-release-date="${#dates.format(product.releaseDate, 'yyyy-MM-dd')}"
+                        th:data-quantity="${product.quantity}">
+                    Update
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Update Product Modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Update Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updateForm" th:action="@{/api/products/update}" method="post">
+                    <input type="hidden" id="updateProductId" name="productId" />
+
+                    <div class="form-group">
+                        <label for="updateProductName">Product Name:</label>
+                        <input type="text" class="form-control" id="updateProductName" name="productName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="updateDescription">Description:</label>
+                        <input type="text" class="form-control" id="updateDescription" name="description" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="updateBrand">Brand:</label>
+                        <input type="text" class="form-control" id="updateBrand" name="brand" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="updateCategory">Category:</label>
+                        <input type="text" class="form-control" id="updateCategory" name="category" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="updateReleaseDate">Release Date:</label>
+                        <input type="date" class="form-control" id="updateReleaseDate" name="releaseDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="updateQuantity">Quantity:</label>
+                        <input type="number" class="form-control" id="updateQuantity" name="quantity" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update Product</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Script to handle modal data population -->
+<script>
+    $('#updateModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var productId = button.data('product-id');
+        var productName = button.data('product-name');
+        var description = button.data('description');
+        var brand = button.data('brand');
+        var category = button.data('category');
+        var releaseDate = button.data('release-date');
+        var quantity = button.data('quantity');
+
+        var modal = $(this);
+        modal.find('#updateProductId').val(productId);
+        modal.find('#updateProductName').val(productName);
+        modal.find('#updateDescription').val(description);
+        modal.find('#updateBrand').val(brand);
+        modal.find('#updateCategory').val(category);
+        modal.find('#updateReleaseDate').val(releaseDate);
+        modal.find('#updateQuantity').val(quantity);
+    });
+</script>
+
+</body>
+</html>
